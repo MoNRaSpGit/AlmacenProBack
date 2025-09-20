@@ -1,9 +1,12 @@
-import express from 'express'
-import { getProduct, listProducts } from '../controllers/productsController.js'
+import express from "express";
+import { getProduct, listProducts } from "../controllers/productsController.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', listProducts)
-router.get('/:barcode', getProduct)
+// Listar todos los productos
+router.get("/", listProducts);
 
-export default router
+// Buscar producto por código
+router.get("/:barcode", getProduct);
+
+export default router;
