@@ -1,0 +1,19 @@
+# dependencias
+node_modules/
+
+# variables de entorno (no subir credenciales)
+.env
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# build / output
+dist/
+build/
+
+# sistema (Windows / MacOS)
+.DS_Store
+Thumbs.db
