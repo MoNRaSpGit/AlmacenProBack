@@ -1,15 +1,8 @@
 import { db } from "../config/db.js";
 
-// Iniciar caja del día
-export async function iniciarCaja(montoInicial) {
-  const [result] = await db.execute(
-    "INSERT INTO caja (fecha, monto_inicial, monto_total) VALUES (CURDATE(), ?, ?)",
-    [montoInicial, montoInicial]
-  );
-  return result.insertId;
-}
-
-// Obtener saldo del día actual
+/**
+ * Devuelve la fila de caja de HOY (o undefined si no existe)
+ */
 export async function obtenerCajaHoy() {
   const [[row]] = await db.execute(
     "SELECT * FROM caja WHERE fecha = CURDATE() LIMIT 1"
@@ -17,24 +10,35 @@ export async function obtenerCajaHoy() {
   return row;
 }
 
-// Registrar venta (sumar al total)
-export async function registrarVenta(monto) {
-  await db.execute(
-    "UPDATE caja SET monto_total = monto_total + ? WHERE fecha = CURDATE()",
-    [monto]
-  );
+/**
+ * Inicia la caja de HOY. Si ya existe, la sobreescribe (setea inicial y total al mismo valor)
+ */
+export async function iniciarCaja(montoInicial) {
+  const existente = await obtenerCajaHoy();
+  if (existente) {
+    await db.execute(
+      "UPDATE caja SET monto_inicial = ?, monto_total = ? WHERE id = ?",
+      [montoInicial, montoInicial, existente.id]
+    );
+    return existente.id;
+  } else {
+    const [res] = await db.execute(
+      "INSERT INTO caja (fecha, monto_inicial, monto_total) VALUES (CURDATE(), ?, ?)",
+      [montoInicial, montoInicial]
+    );
+    return res.insertId;
+  }
 }
 
-// Registrar pago a proveedor (restar al total)
-export async function registrarPago(monto) {
-  await db.execute(
-    "UPDATE caja SET monto_total = monto_total - ? WHERE fecha = CURDATE()",
-    [monto]
-  );
-}
-
-// Descontar o sumar a la caja
+/**
+ * Suma o resta al monto_total de HOY. Devuelve affectedRows para saber si ya estaba iniciada.
+ * delta > 0 => suma (venta)
+ * delta < 0 => resta (pago)
+ */
 export async function actualizarCaja(delta) {
-  await db.execute("UPDATE caja SET monto_total = monto_total + ?", [delta]);
+  const [res] = await db.execute(
+    "UPDATE caja SET monto_total = monto_total + ? WHERE fecha = CURDATE()",
+    [delta]
+  );
+  return res.affectedRows; // 0 si no hay caja iniciada
 }
-
