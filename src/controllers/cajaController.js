@@ -3,6 +3,7 @@ import {
   obtenerCajaActiva,
   actualizarCaja,
   cerrarCaja,
+  obtenerPagos,
 } from "../models/cajaModel.js";
 
 // POST /api/caja/abrir
@@ -20,6 +21,15 @@ export async function abrir(req, res) {
   }
 }
 
+
+export async function listarPagos(req, res) {
+  try {
+    const pagos = await obtenerPagos();
+    res.json(pagos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
 // GET /api/caja/activa
 export async function verActiva(req, res) {
   try {
