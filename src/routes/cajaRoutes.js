@@ -1,18 +1,11 @@
 import express from "express";
-import {
-  abrir,
-  venta,
-  pago,
-  saldo,
-  cerrar,
-} from "../controllers/cajaController.js";
+import { iniciar, ver, venta, pago } from "../controllers/cajaController.js";
 
 const router = express.Router();
 
-router.post("/abrir", abrir);
+router.post("/iniciar", iniciar);
+router.get("/", ver);
 router.post("/venta", venta);
 router.post("/pago", pago);
-router.get("/saldo/:sesionId", saldo);
-router.post("/cerrar", cerrar);
 
 export default router;
