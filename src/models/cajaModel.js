@@ -32,3 +32,9 @@ export async function registrarPago(monto) {
     [monto]
   );
 }
+
+// Descontar o sumar a la caja
+export async function actualizarCaja(delta) {
+  await db.execute("UPDATE caja SET monto_total = monto_total + ?", [delta]);
+}
+
