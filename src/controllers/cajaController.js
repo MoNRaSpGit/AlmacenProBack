@@ -2,13 +2,11 @@ import {
   abrirCaja,
   obtenerCajaActiva,
   actualizarCaja,
-  cerrarCajaDB
+  cerrarCajaDB,
+  registrarMovimiento,
+  obtenerMovimientosHoy
 } from "../models/cajaModel.js";
-
-import {
-  crearPago,
-  obtenerPagosHoy
-} from "../models/pagosModel.js";
+import { crearPago } from "../models/pagosModel.js";
 
 // POST /api/caja/abrir
 export async function abrir(req, res) {
@@ -26,7 +24,9 @@ export async function abrir(req, res) {
 export async function verActiva(req, res) {
   try {
     const caja = await obtenerCajaActiva();
-    if (!caja) return res.status(404).json({ message: "No hay caja activa" });
+    if (!caja) {
+      return res.status(404).json({ message: "No hay caja activa" });
+    }
     res.json(caja);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -39,6 +39,8 @@ export async function venta(req, res) {
     const { monto } = req.body;
     const id = await actualizarCaja(Number(monto));
     if (!id) return res.status(400).json({ error: "No hay caja activa" });
+
+    await registrarMovimiento("ingreso", "Venta", Number(monto));
 
     const caja = await obtenerCajaActiva();
     res.json({ message: "Venta registrada", caja });
@@ -58,20 +60,21 @@ export async function pago(req, res) {
     const id = await actualizarCaja(-Number(monto));
     if (!id) return res.status(400).json({ error: "No hay caja activa" });
 
-    const idPago = await crearPago(nombre, Number(monto));
-    const caja = await obtenerCajaActiva();
+    await crearPago(nombre, Number(monto));
+    await registrarMovimiento("egreso", nombre, Number(monto));
 
-    res.json({ message: "Pago registrado", idPago, caja });
+    const caja = await obtenerCajaActiva();
+    res.json({ message: "Pago registrado", caja });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 }
 
-// GET /api/caja/pagos (solo hoy)
-export async function listarPagos(req, res) {
+// GET /api/caja/movimientos
+export async function listarMovimientos(req, res) {
   try {
-    const pagos = await obtenerPagosHoy();
-    res.json(pagos);
+    const movimientos = await obtenerMovimientosHoy();
+    res.json(movimientos);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

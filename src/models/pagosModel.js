@@ -1,6 +1,6 @@
 import { db } from "../config/db.js";
 
-// Crear pago
+/** Inserta un nuevo pago */
 export async function crearPago(nombre, monto) {
   const [res] = await db.execute(
     `INSERT INTO pagos (nombre, monto) VALUES (?, ?)`,
@@ -9,7 +9,7 @@ export async function crearPago(nombre, monto) {
   return res.insertId;
 }
 
-// Pagos de HOY
+/** Lista pagos de HOY */
 export async function obtenerPagosHoy() {
   const [rows] = await db.execute(
     `SELECT id, nombre, monto, fecha
