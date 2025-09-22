@@ -4,7 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 // Importamos las rutas (OJO: sin "src/")
-import productRoutes from "./routes/productRoutes.js";
+import productRoutes from "./routes/products.js";
 import cajaRoutes from "./routes/cajaRoutes.js";
 
 dotenv.config();
