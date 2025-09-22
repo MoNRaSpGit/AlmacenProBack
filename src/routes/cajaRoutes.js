@@ -5,7 +5,7 @@ import {
   venta,
   pago,
   listarPagos,
-  cerrar,
+  cerrar
 } from "../controllers/cajaController.js";
 
 const router = express.Router();
@@ -14,7 +14,7 @@ router.post("/abrir", abrir);
 router.get("/activa", verActiva);
 router.post("/venta", venta);
 router.post("/pago", pago);
-router.get("/pagos", listarPagos);   // 👈 ahora sí devuelve solo HOY
+router.get("/pagos", listarPagos);
 router.post("/cerrar", cerrar);
 
 export default router;

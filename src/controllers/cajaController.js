@@ -2,9 +2,13 @@ import {
   abrirCaja,
   obtenerCajaActiva,
   actualizarCaja,
-  cerrarCajaDB,
+  cerrarCajaDB
 } from "../models/cajaModel.js";
-import { crearPago, obtenerPagosHoy } from "../models/pagosModel.js";
+
+import {
+  crearPago,
+  obtenerPagosHoy
+} from "../models/pagosModel.js";
 
 // POST /api/caja/abrir
 export async function abrir(req, res) {
@@ -22,9 +26,7 @@ export async function abrir(req, res) {
 export async function verActiva(req, res) {
   try {
     const caja = await obtenerCajaActiva();
-    if (!caja) {
-      return res.status(404).json({ message: "No hay caja activa" });
-    }
+    if (!caja) return res.status(404).json({ message: "No hay caja activa" });
     res.json(caja);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -58,13 +60,14 @@ export async function pago(req, res) {
 
     const idPago = await crearPago(nombre, Number(monto));
     const caja = await obtenerCajaActiva();
+
     res.json({ message: "Pago registrado", idPago, caja });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 }
 
-// GET /api/caja/pagos (solo de HOY)
+// GET /api/caja/pagos (solo hoy)
 export async function listarPagos(req, res) {
   try {
     const pagos = await obtenerPagosHoy();

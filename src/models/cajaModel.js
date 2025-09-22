@@ -1,31 +1,38 @@
 import { db } from "../config/db.js";
 
+// Abrir caja
 export async function abrirCaja(montoInicial) {
-  const [result] = await db.execute(
-    "INSERT INTO cajaAlmacen (monto_inicial, monto_total) VALUES (?, ?)",
+  const [res] = await db.execute(
+    `INSERT INTO cajaAlmacen (fecha, monto_inicial, monto_total, activa)
+     VALUES (CURDATE(), ?, ?, 1)`,
     [montoInicial, montoInicial]
   );
-  return result.insertId;
+  return res.insertId;
 }
 
+// Obtener la caja activa
 export async function obtenerCajaActiva() {
-  const [[row]] = await db.execute(
-    "SELECT * FROM cajaAlmacen WHERE activa = 1 ORDER BY id DESC LIMIT 1"
+  const [rows] = await db.execute(
+    `SELECT * FROM cajaAlmacen WHERE activa = 1 LIMIT 1`
   );
-  return row;
+  return rows[0];
 }
 
+// Actualizar caja (suma o resta)
 export async function actualizarCaja(monto) {
-  const [result] = await db.execute(
-    "UPDATE cajaAlmacen SET monto_total = monto_total + ? WHERE activa = 1",
+  const [res] = await db.execute(
+    `UPDATE cajaAlmacen
+     SET monto_total = monto_total + ?
+     WHERE activa = 1`,
     [monto]
   );
-  return result.affectedRows;
+  return res.affectedRows;
 }
 
-export async function cerrarCaja() {
-  const [result] = await db.execute(
-    "UPDATE cajaAlmacen SET activa = 0 WHERE activa = 1"
+// Cerrar caja
+export async function cerrarCajaDB() {
+  const [res] = await db.execute(
+    `UPDATE cajaAlmacen SET activa = 0 WHERE activa = 1`
   );
-  return result.affectedRows;
+  return res.affectedRows;
 }
