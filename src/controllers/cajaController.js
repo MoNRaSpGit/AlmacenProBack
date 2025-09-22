@@ -21,7 +21,7 @@ export async function abrir(req, res) {
 }
 
 // GET /api/caja/activa
-export async function verActiva(req, res) {
+export async function verActiva(_req, res) {
   try {
     const caja = await obtenerCajaActiva();
     if (!caja) {
@@ -71,7 +71,7 @@ export async function pago(req, res) {
 }
 
 // GET /api/caja/movimientos
-export async function listarMovimientos(req, res) {
+export async function listarMovimientos(_req, res) {
   try {
     const movimientos = await obtenerMovimientosHoy();
     res.json(movimientos);
@@ -81,7 +81,7 @@ export async function listarMovimientos(req, res) {
 }
 
 // POST /api/caja/cerrar
-export async function cerrar(req, res) {
+export async function cerrar(_req, res) {
   try {
     const id = await cerrarCajaDB();
     if (!id) return res.status(400).json({ error: "No hay caja activa" });
