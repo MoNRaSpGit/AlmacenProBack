@@ -1,12 +1,17 @@
-import express from 'express'
-import cors from 'cors'
-import productsRoutes from './routes/products.js'
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import cajaRoutes from "./routes/cajaRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 
-const app = express()
-app.use(cors())
-app.use(express.json())
+dotenv.config();
 
-// rutas
-app.use('/api/products', productsRoutes)
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-export default app
+// Rutas
+app.use("/api/products", productRoutes);
+app.use("/api/caja", cajaRoutes);
+
+export default app;
