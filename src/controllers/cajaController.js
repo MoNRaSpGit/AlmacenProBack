@@ -2,7 +2,7 @@ import {
   abrirCaja,
   obtenerCajaActiva,
   actualizarCaja,
-  cerrarCaja
+  cerrarCaja,   // ✅ del modelo
 } from "../models/cajaModel.js";
 
 // POST /api/caja/abrir
@@ -61,10 +61,11 @@ export async function pago(req, res) {
 // POST /api/caja/cerrar
 export async function cerrar(req, res) {
   try {
-    const id = await cerrarCaja();
-    if (!id) return res.status(400).json({ error: "No hay caja activa" });
-
-    res.json({ message: "Caja cerrada", id });
+    const affected = await cerrarCaja(); // ✅ usa la del modelo
+    if (!affected) {
+      return res.status(400).json({ error: "No hay caja activa" });
+    }
+    res.json({ message: "Caja cerrada" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

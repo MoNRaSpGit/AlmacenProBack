@@ -1,44 +1,35 @@
 import { db } from "../config/db.js";
 
-// Abrir caja
+// 📌 Abrir una nueva caja
 export async function abrirCaja(montoInicial) {
   const [result] = await db.execute(
-    "INSERT INTO caja (monto_inicial, monto_total, estado) VALUES (?, ?, 'abierta')",
+    "INSERT INTO caja (fecha, monto_inicial, monto_total, activa) VALUES (CURDATE(), ?, ?, 1)",
     [montoInicial, montoInicial]
   );
   return result.insertId;
 }
 
-// Obtener caja activa
+// 📌 Obtener la caja activa
 export async function obtenerCajaActiva() {
   const [[row]] = await db.execute(
-    "SELECT * FROM caja WHERE estado = 'abierta' ORDER BY fecha DESC LIMIT 1"
+    "SELECT id, fecha, monto_inicial, monto_total, activa FROM caja WHERE activa = 1 ORDER BY id DESC LIMIT 1"
   );
   return row;
 }
 
-// Actualizar caja (sumar/restar monto)
+// 📌 Actualizar el saldo de la caja (suma/resta al monto_total)
 export async function actualizarCaja(monto) {
-  const caja = await obtenerCajaActiva();
-  if (!caja) return null;
-
-  await db.execute(
-    "UPDATE caja SET monto_total = monto_total + ? WHERE id = ?",
-    [monto, caja.id]
+  const [result] = await db.execute(
+    "UPDATE caja SET monto_total = monto_total + ? WHERE activa = 1",
+    [monto]
   );
-
-  return caja.id;
+  return result.affectedRows;
 }
 
-// Cerrar caja
+// 📌 Cerrar la caja (poner activa = 0)
 export async function cerrarCaja() {
-  const caja = await obtenerCajaActiva();
-  if (!caja) return null;
-
-  await db.execute(
-    "UPDATE caja SET estado = 'cerrada' WHERE id = ?",
-    [caja.id]
+  const [result] = await db.execute(
+    "UPDATE caja SET activa = 0 WHERE activa = 1"
   );
-
-  return caja.id;
+  return result.affectedRows;
 }
