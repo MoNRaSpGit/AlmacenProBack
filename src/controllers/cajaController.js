@@ -3,10 +3,11 @@ import {
   obtenerCajaActiva,
   actualizarCaja,
   cerrarCajaDB,
-  registrarMovimiento,  
-  obtenerHistorialCajas 
-
+  registrarMovimiento,
+  obtenerMovimientosCajaActiva, // 👈 FALTABA ESTA
+  obtenerHistorialCajas,        // 👈 y esta ya está bien
 } from "../models/cajaModel.js";
+
 import { crearPago } from "../models/pagosModel.js";
 
 // POST /api/caja/abrir
@@ -81,7 +82,6 @@ export async function listarMovimientos(_req, res) {
   }
 }
 
-
 // POST /api/caja/cerrar
 export async function cerrar(_req, res) {
   try {
@@ -94,6 +94,7 @@ export async function cerrar(_req, res) {
   }
 }
 
+// GET /api/caja/historial
 export async function historial(req, res) {
   try {
     const { fecha } = req.query; // opcional ?fecha=2025-10-11
@@ -104,4 +105,3 @@ export async function historial(req, res) {
     res.status(500).json({ error: err.message });
   }
 }
-
