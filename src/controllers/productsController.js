@@ -1,4 +1,6 @@
 import { findByBarcode, getAllProducts } from '../models/productModel.js'
+import { db } from "../config/db.js";
+
 
 export async function getProduct(req, res) {
   try {
