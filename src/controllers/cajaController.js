@@ -73,12 +73,13 @@ export async function pago(req, res) {
 // GET /api/caja/movimientos
 export async function listarMovimientos(_req, res) {
   try {
-    const movimientos = await obtenerMovimientosHoy();
+    const movimientos = await obtenerMovimientosCajaActiva();
     res.json(movimientos);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 }
+
 
 // POST /api/caja/cerrar
 export async function cerrar(_req, res) {

@@ -38,20 +38,64 @@ export async function cerrarCajaDB() {
 
 // 👉 Registrar movimiento
 export async function registrarMovimiento(tipo, descripcion, monto) {
+  // buscar caja activa
+  const [cajaRows] = await db.execute(
+    `SELECT id FROM cajaAlmacen WHERE activa = 1 ORDER BY id DESC LIMIT 1`
+  );
+  const cajaActiva = cajaRows[0];
+  if (!cajaActiva) {
+    console.warn("⚠️ No hay caja activa, no se registró el movimiento");
+    return null;
+  }
+
+  // registrar movimiento vinculado a esa caja
   const [res] = await db.execute(
-    `INSERT INTO movimientos (tipo, descripcion, monto) VALUES (?, ?, ?)`,
-    [tipo, descripcion, monto]
+    `INSERT INTO movimientos (tipo, descripcion, monto, caja_id)
+     VALUES (?, ?, ?, ?)`,
+    [tipo, descripcion, monto, cajaActiva.id]
   );
   return res.insertId;
 }
 
+
 // 👉 Obtener movimientos de HOY
-export async function obtenerMovimientosHoy() {
+export async function obtenerMovimientosCajaActiva() {
+  const [cajaRows] = await db.execute(
+    `SELECT id FROM cajaAlmacen WHERE activa = 1 ORDER BY id DESC LIMIT 1`
+  );
+  const cajaActiva = cajaRows[0];
+  if (!cajaActiva) return [];
+
   const [rows] = await db.execute(
     `SELECT id, tipo, descripcion, monto, fecha
      FROM movimientos
-     WHERE DATE(fecha) = CURDATE()
-     ORDER BY fecha DESC`
+     WHERE caja_id = ?
+     ORDER BY fecha DESC`,
+    [cajaActiva.id]
   );
   return rows;
 }
+
+export async function obtenerHistorialCajas(fecha = null) {
+  let query = `
+    SELECT c.id, c.fecha, c.turno, c.monto_inicial, c.monto_total, c.activa,
+           COUNT(m.id) AS cantidad_movimientos,
+           SUM(CASE WHEN m.tipo = 'ingreso' THEN m.monto ELSE 0 END) AS total_ingresos,
+           SUM(CASE WHEN m.tipo = 'egreso' THEN m.monto ELSE 0 END) AS total_egresos
+    FROM cajaAlmacen c
+    LEFT JOIN movimientos m ON c.id = m.caja_id
+  `;
+  const params = [];
+
+  if (fecha) {
+    query += " WHERE c.fecha = ?";
+    params.push(fecha);
+  }
+
+  query += " GROUP BY c.id ORDER BY c.fecha DESC, c.id DESC";
+
+  const [rows] = await db.execute(query, params);
+  return rows;
+}
+
+
