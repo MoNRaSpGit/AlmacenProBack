@@ -1,5 +1,5 @@
 import express from "express";
-import { getProduct, listProducts, crearProductoRapido  } from "../controllers/productsController.js";
+import { getProduct, listProducts, crearProductoRapido,obtenerProductoPorCodigo  } from "../controllers/productsController.js";
 
 const router = express.Router();
 
@@ -11,4 +11,5 @@ router.get("/:barcode", getProduct);
 
 router.post("/rapido", crearProductoRapido);
 
+router.get("/:barcode", obtenerProductoPorCodigo);
 export default router;
