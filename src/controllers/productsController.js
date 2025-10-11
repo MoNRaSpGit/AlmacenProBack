@@ -27,30 +27,28 @@ export async function crearProductoRapido(req, res) {
   try {
     const { name, price, barcode } = req.body;
 
-    // Validación mínima
+    console.log("📥 Recibido en crearProductoRapido:", { name, price, barcode });
+
     if (!price || !barcode) {
       return res.status(400).json({ error: "Precio y código son obligatorios" });
     }
 
     const nombreFinal = name && name.trim() !== "" ? name.trim() : "Producto?";
+    const precioFinal = parseFloat(price) || 0;
 
     const [result] = await db.execute(
       `INSERT INTO productos_test (name, price, barcode, status)
        VALUES (?, ?, ?, 'pendiente')`,
-      [nombreFinal, price, barcode]
+      [nombreFinal, precioFinal, barcode]
     );
 
-    res.json({
-      id: result.insertId,
-      name: nombreFinal,
-      price,
-      barcode,
-    });
+    res.json({ id: result.insertId, name: nombreFinal, price: precioFinal, barcode });
   } catch (err) {
     console.error("❌ Error en crearProductoRapido:", err);
     res.status(500).json({ error: err.message });
   }
 }
+
 
 /**
  * Busca producto por código de barras
