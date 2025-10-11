@@ -3,8 +3,9 @@ import {
   obtenerCajaActiva,
   actualizarCaja,
   cerrarCajaDB,
-  registrarMovimiento,
-  obtenerMovimientosHoy
+  registrarMovimiento,  
+  obtenerHistorialCajas 
+
 } from "../models/cajaModel.js";
 import { crearPago } from "../models/pagosModel.js";
 
@@ -92,3 +93,15 @@ export async function cerrar(_req, res) {
     res.status(500).json({ error: err.message });
   }
 }
+
+export async function historial(req, res) {
+  try {
+    const { fecha } = req.query; // opcional ?fecha=2025-10-11
+    const data = await obtenerHistorialCajas(fecha);
+    res.json(data);
+  } catch (err) {
+    console.error("❌ Error al obtener historial de cajas:", err);
+    res.status(500).json({ error: err.message });
+  }
+}
+
