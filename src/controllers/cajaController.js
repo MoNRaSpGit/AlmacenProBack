@@ -1,11 +1,13 @@
+import { db } from "../config/db.js"; // 👈 Faltaba esta línea
+
 import {
   abrirCaja,
   obtenerCajaActiva,
   actualizarCaja,
   cerrarCajaDB,
   registrarMovimiento,
-  obtenerMovimientosCajaActiva, // 👈 FALTABA ESTA
-  obtenerHistorialCajas,        // 👈 y esta ya está bien
+  obtenerMovimientosCajaActiva,
+  obtenerHistorialCajas,
 } from "../models/cajaModel.js";
 
 import { crearPago } from "../models/pagosModel.js";
@@ -38,14 +40,33 @@ export async function verActiva(_req, res) {
 // POST /api/caja/venta
 export async function venta(req, res) {
   try {
-    const { monto } = req.body;
-    const id = await actualizarCaja(Number(monto));
-    if (!id) return res.status(400).json({ error: "No hay caja activa" });
+    const { monto, productos } = req.body; // productos: [{ id, cantidad, precio }]
+    const [mov] = await db.execute(
+      `INSERT INTO movimientos (tipo, descripcion, monto, caja_id)
+       VALUES ('ingreso', 'Venta', ?, (SELECT id FROM cajaAlmacen WHERE activa = 1 LIMIT 1))`,
+      [monto]
+    );
 
-    await registrarMovimiento("ingreso", "Venta", Number(monto));
+    const movimientoId = mov.insertId;
 
-    const caja = await obtenerCajaActiva();
-    res.json({ message: "Venta registrada", caja });
+    // Guardamos detalle
+    if (productos?.length) {
+      for (const p of productos) {
+        await db.execute(
+          `INSERT INTO ventas_detalle (movimiento_id, producto_id, cantidad, precio_unitario)
+           VALUES (?, ?, ?, ?)`,
+          [movimientoId, p.id, p.cantidad, p.precio]
+        );
+      }
+    }
+
+    // Actualizamos caja
+    await db.execute(
+      `UPDATE cajaAlmacen SET monto_total = monto_total + ? WHERE activa = 1`,
+      [monto]
+    );
+
+    res.json({ message: "Venta registrada", id: movimientoId });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
