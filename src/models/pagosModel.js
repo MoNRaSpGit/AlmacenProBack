@@ -10,7 +10,7 @@ export async function crearPago(nombre, monto) {
 }
 
 /** Lista pagos de HOY */
-export async function obtenerPagosHoy() {
+export async function obtenerPagos() {
   const [rows] = await db.execute(
     `SELECT id, nombre, monto, fecha
      FROM pagos
