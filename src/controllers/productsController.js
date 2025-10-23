@@ -1,13 +1,11 @@
 import { findByBarcode, getAllProducts } from "../models/productModel.js";
 import { db } from "../config/db.js";
 
-// 🔹 Buscar producto por código de barras (antiguo)
+// 🧾 Buscar producto por código
 export async function getProduct(req, res) {
   try {
     const product = await findByBarcode(req.params.barcode);
-    if (!product) {
-      return res.status(404).json({ message: "Producto no encontrado" });
-    }
+    if (!product) return res.status(404).json({ message: "Producto no encontrado" });
     res.json(product);
   } catch (err) {
     console.error("❌ Error en getProduct:", err);
@@ -15,8 +13,8 @@ export async function getProduct(req, res) {
   }
 }
 
-// 🔹 Listar todos los productos
-export async function listProducts(req, res) {
+// 📋 Listar todos los productos
+export async function listProducts(_req, res) {
   try {
     const products = await getAllProducts();
     res.json(products);
@@ -26,18 +24,15 @@ export async function listProducts(req, res) {
   }
 }
 
-// 🔹 Crear producto rápido (desde frontend)
+// ⚡ Crear producto rápido (desde el POS)
 export async function crearProductoRapido(req, res) {
   try {
     const { name, price, barcode } = req.body;
-
-    console.log("📥 Recibido en crearProductoRapido:", { name, price, barcode });
-
     if (!price || !barcode) {
       return res.status(400).json({ error: "Precio y código son obligatorios" });
     }
 
-    const nombreFinal = name && name.trim() !== "" ? name.trim() : "Producto?";
+    const nombreFinal = name?.trim() || "Producto?";
     const precioFinal = parseFloat(price) || 0;
 
     const [result] = await db.execute(
@@ -58,7 +53,7 @@ export async function crearProductoRapido(req, res) {
   }
 }
 
-// 🔹 Buscar producto por código
+// 🔍 Buscar producto por código exacto
 export async function obtenerProductoPorCodigo(req, res) {
   try {
     const { barcode } = req.params;
@@ -66,11 +61,8 @@ export async function obtenerProductoPorCodigo(req, res) {
       "SELECT * FROM productos_test WHERE barcode = ?",
       [barcode]
     );
-
-    if (rows.length === 0) {
+    if (rows.length === 0)
       return res.status(404).json({ error: "Producto no encontrado" });
-    }
-
     res.json(rows[0]);
   } catch (err) {
     console.error("❌ Error en obtenerProductoPorCodigo:", err);
