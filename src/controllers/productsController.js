@@ -80,7 +80,9 @@ export async function getRandomProducts(req, res) {
   try {
     const cantidad = parseInt(req.params.cantidad) || 5;
     const [rows] = await db.execute(
-      `SELECT * FROM productos_test ORDER BY RAND() LIMIT ?`,
+      `SELECT id, name, price, barcode FROM productos_test
+       WHERE price IS NOT NULL AND price > 0
+       ORDER BY RAND() LIMIT ?`,
       [cantidad]
     );
     res.json(rows);
@@ -89,5 +91,6 @@ export async function getRandomProducts(req, res) {
     res.status(500).json({ error: "Error al obtener productos random" });
   }
 }
+
 
 

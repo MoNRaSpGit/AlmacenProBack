@@ -9,16 +9,13 @@ import {
 
 const router = express.Router();
 
-// 🔹 Productos random
+// 🎲 Nuevo endpoint para productos random
 router.get("/random/:cantidad", getRandomProducts);
 
-// 🔹 Listar todos
+// ✅ Resto de rutas sigue igual
 router.get("/", listProducts);
-
-// 🔹 Buscar producto por código
-router.get("/codigo/:barcode", obtenerProductoPorCodigo);
-
-// 🔹 Crear producto rápido
+router.get("/:barcode", getProduct);
 router.post("/rapido", crearProductoRapido);
+router.get("/:barcode", obtenerProductoPorCodigo);
 
 export default router;
