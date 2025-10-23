@@ -70,27 +70,5 @@ export async function obtenerProductoPorCodigo(req, res) {
   }
 }
 
-// 🎲 Obtener productos aleatorios
-// 🎲 Obtener productos aleatorios
-export async function getRandomProducts(req, res) {
-  try {
-    const cantidad = parseInt(req.params.cantidad) || 5;
 
-    // Seguridad: aseguramos que 'cantidad' sea un número entero positivo y máximo 50
-    const limit = Math.max(1, Math.min(cantidad, 50));
-
-    const [rows] = await db.query(`
-      SELECT id, name, price, barcode
-      FROM productos_test
-      WHERE price IS NOT NULL AND price > 0
-      ORDER BY RAND()
-      LIMIT ${limit};
-    `);
-
-    res.json(rows);
-  } catch (err) {
-    console.error("❌ Error al obtener productos random:", err);
-    res.status(500).json({ error: "Error al obtener productos random" });
-  }
-}
 

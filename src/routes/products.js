@@ -4,13 +4,13 @@ import {
   listProducts,
   crearProductoRapido,
   obtenerProductoPorCodigo,
-  getRandomProducts,
+  
 } from "../controllers/productsController.js";
 
 const router = express.Router();
 
-// 🎲 Ruta de productos aleatorios (antes que cualquier parámetro dinámico)
-router.get("/random/:cantidad", getRandomProducts);
+
+
 
 // 🆕 Crear producto rápido
 router.post("/rapido", crearProductoRapido);
