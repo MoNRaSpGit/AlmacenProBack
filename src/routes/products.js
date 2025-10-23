@@ -9,19 +9,19 @@ import {
 
 const router = express.Router();
 
-// 🎲 Productos aleatorios (tiene que ir antes de /:barcode)
+// ✅ Ruta de productos aleatorios — debe ir antes de cualquier parámetro dinámico
 router.get("/random/:cantidad", getRandomProducts);
 
-// 🔹 Crear producto rápido
+// ✅ Crear producto rápido
 router.post("/rapido", crearProductoRapido);
 
-// 🔹 Buscar producto por código (ruta más específica)
+// ✅ Buscar producto por código específico
 router.get("/codigo/:barcode", obtenerProductoPorCodigo);
 
-// 🔹 Listar todos los productos
+// ✅ Listar todos los productos
 router.get("/", listProducts);
 
-// (opcional) Si usabas getProduct con otro propósito, podés borrarlo o dejarlo al final:
-// router.get("/:barcode", getProduct);
+// (opcional) Buscar por código genérico — al final, para no interferir
+router.get("/:barcode", getProduct);
 
 export default router;
