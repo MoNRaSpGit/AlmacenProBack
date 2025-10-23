@@ -75,3 +75,19 @@ export async function obtenerProductoPorCodigo(req, res) {
   }
 }
 
+// 🎲 Obtener productos aleatorios
+export async function getRandomProducts(req, res) {
+  try {
+    const cantidad = parseInt(req.params.cantidad) || 5;
+    const [rows] = await db.execute(
+      `SELECT * FROM productos_test ORDER BY RAND() LIMIT ?`,
+      [cantidad]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("❌ Error al obtener productos random:", err);
+    res.status(500).json({ error: "Error al obtener productos random" });
+  }
+}
+
+

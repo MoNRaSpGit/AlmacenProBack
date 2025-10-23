@@ -1,15 +1,24 @@
 import express from "express";
-import { getProduct, listProducts, crearProductoRapido,obtenerProductoPorCodigo  } from "../controllers/productsController.js";
+import {
+  getProduct,
+  listProducts,
+  crearProductoRapido,
+  obtenerProductoPorCodigo,
+  getRandomProducts,
+} from "../controllers/productsController.js";
 
 const router = express.Router();
 
-// Listar todos los productos
+// 🔹 Productos random
+router.get("/random/:cantidad", getRandomProducts);
+
+// 🔹 Listar todos
 router.get("/", listProducts);
 
-// Buscar producto por código
-router.get("/:barcode", getProduct);
+// 🔹 Buscar producto por código
+router.get("/codigo/:barcode", obtenerProductoPorCodigo);
 
+// 🔹 Crear producto rápido
 router.post("/rapido", crearProductoRapido);
 
-router.get("/:barcode", obtenerProductoPorCodigo);
 export default router;
