@@ -6,6 +6,7 @@ import cajaRoutes from "./routes/cajaRoutes.js";
 import productRoutes from "./routes/products.js"; // <- O el nombre que tengas realmente
 import pagoRoutes from "./routes/pagoRoutes.js";
 import stockRoutes from "./routes/stockRoutes.js";
+import pedidosRoutes from "./routes/pedidosRoutes.js"; // ⬅️ nuevo
 
 
 
@@ -24,6 +25,8 @@ app.use("/api/caja", cajaRoutes);
 
 app.use("/api/pagos", pagoRoutes);
 app.use("/api/stock", stockRoutes);
+
+app.use("/api/pedidos", pedidosRoutes); // ⬅️ aquí
 
 app.get("/", (_req, res) => res.send("✅ API AlmacenPro funcionando"));
 export default app;
